@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOVIE BOX - Your Ultimate Movie Search Experience</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #e50914, #ff6b35);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #e50914, #ff6b35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-section {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .search-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, #cccccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-subtitle {
+            font-size: 1.25rem;
+            color: #cccccc;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-form {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e5e5e5;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            position: relative;
+        }
+
+        .search-input:focus {
+            border-color: #e50914;
+            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.1);
+        }
+
+        .input-container {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            z-index: 1;
+        }
+
+        .type-select {
+            padding: 1rem;
+            border: 2px solid #e5e5e5;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            background: white;
+            min-width: 150px;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #e50914, #ff6b35);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(229, 9, 20, 0.3);
+        }
+
+        .search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .movie-card {
+            background: #1a1a1a;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .movie-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .movie-poster {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .movie-card:hover .movie-poster {
+            transform: scale(1.05);
+        }
+
+        .movie-info {
+            padding: 1rem;
+        }
+
+        .movie-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+            display: -webkit-box;
+            
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .movie-year {
+            color: #cccccc;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .movie-type {
+            background: #e50914;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        .movie-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.75rem;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #ffd700;
+            font-size: 0.875rem;
+        }
+
+        .favorite-btn {
+            background: none;
+            border: none;
+            color: #cccccc;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .favorite-btn:hover {
+            color: #e50914;
+        }
+
+        .favorite-btn.active {
+            color: #e50914;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #333;
+            border-top: 3px solid #e50914;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            text-align: center;
+            padding: 4rem 0;
+            color: #ff6b6b;
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .featured-section {
+            padding: 3rem 0;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 3rem 0;
+        }
+
+        .page-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: #555;
+        }
+
+        .page-btn.active {
+            background: #e50914;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .footer {
+            background: #1a1a1a;
+            padding: 3rem 0 2rem;
+            margin-top: 4rem;
+            text-align: center;
+            border-top: 1px solid #333;
+        }
+
+        .footer-content {
+            color: #cccccc;
+        }
+
+        .welcome-section {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            color: #e50914;
+            margin-bottom: 1rem;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #e50914;
+            margin-bottom: 1rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .no-results-icon {
+            font-size: 4rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .search-title {
+                font-size: 2rem;
+            }
+            
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav-container">
+                <a href="#" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-film"></i>
+                    </div>
+                    <div class="logo-text">MOVIE BOX</div>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="container">
+            <h1 class="search-title">Discover Your Next <span style="color: #e50914;">Favorite Movie</span></h1>
+            <p class="search-subtitle">Search through millions of movies, get detailed information, and build your personal watchlist</p>
+            
+            <form class="search-form" id="searchForm">
+                <div class="input-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        id="searchInput"
+                        placeholder="Search for movies, series, episodes..."
+                        required
+                    >
+                </div>
+                <select class="type-select" id="typeSelect">
+                    <option value="">All Types</option>
+                    <option value="movie">Movies</option>
+                    <option value="series">TV Series</option>
+                    <option value="episode">Episodes</option>
+                </select>
+                <button type="submit" class="search-btn" id="searchBtn">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Loading State -->
+        <div class="loading" id="loadingState" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading movies...</p>
+        </div>
+
+        <!-- Error State -->
+        <div class="error" id="errorState" style="display: none;">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Something went wrong</h3>
+            <p id="errorMessage">Failed to load movies. Please try again.</p>
+            <button class="search-btn" onclick="retrySearch()" style="margin-top: 1rem;">Try Again</button>
+        </div>
+
+        <!-- No Results -->
+        <div class="no-results" id="noResults" style="display: none;">
+            <div class="no-results-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <h3>No movies found</h3>
+            <p>Try adjusting your search terms or filters</p>
+        </div>
+
+        <!-- Search Results -->
+        <div id="searchResults" style="display: none;">
+            <h2 class="section-title" id="resultsTitle">Search Results</h2>
+            <div class="movies-grid" id="moviesGrid"></div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+
+        <!-- Featured Movies -->
+        <div class="featured-section" id="featuredSection">
+            <h2 class="section-title">Featured Movies</h2>
+            <div class="movies-grid" id="featuredGrid"></div>
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="welcome-section" id="welcomeSection">
+            <div class="welcome-icon">
+                <i class="fas fa-film"></i>
+            </div>
+            <h2>Start Your Movie Journey</h2>
+            <p>Use the search bar above to discover amazing movies, TV series, and episodes from around the world.</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Search & Discover</h3>
+                    <p>Find movies by title, actor, or genre</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <h3>Detailed Information</h3>
+                    <p>Get comprehensive movie details and ratings</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Save Favorites</h3>
+                    <p>Build your personal movie collection</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 MOVIE BOX. All rights reserved. | Powered by OMDB API</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Featured movies data with posters
+        const featuredMovies = [
+            {
+                imdbID: "tt0848228",
+                Title: "The Avengers",
+                Year: "2012",
+                Type: "movie",
+                Poster: "https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_SX300.jpg"
+            },
+            {
+                imdbID: "tt0468569",
+                Title: "The Dark Knight",
+                Year: "2008",
+                Type: "movie",
+                Poster: "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_SX300.jpg"
+            },
+            {
+                imdbID: "tt2294629",
+                Title: "Frozen",
+                Year: "2013",
+                Type: "movie",
+                Poster: "https://m.media-amazon.com/images/M/MV5BMTQ1MjQwMTE5OF5BMl5BanBnXkFtZTgwNjk3MTcyMDE@._V1_SX300.jpg"
+            },
+            {
+                imdbID: "tt0114709",
+                Title: "Toy Story",
+                Year: "1995",
+                Type: "movie",
+                Poster: "https://m.media-amazon.com/images/M/MV5BMDU2ZWJlMjktMTRhMy00ZTA5LWEzNDgtYmNmZTEwZTViZWJkXkEyXkFqcGdeQXVyNDQ2OTk4MzI@._V1_SX300.jpg"
+            },
+            {
+                imdbID: "tt0317705",
+                Title: "The Incredibles",
+                Year: "2004",
+                Type: "movie",
+                Poster: "https://m.media-amazon.com/images/M/MV5BMTY5OTU0OTc2NV5BMl5BanBnXkFtZTcwMzU4MDcyMQ@@._V1_SX300.jpg"
+            },
+            {
+                imdbID: "tt0133093",
+                Title: "The Matrix",
+                Year: "1999",
+                Type: "movie",
+                Poster: "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg"
+            },
+            {
+                imdbID: "tt0120737",
+                Title: "The Lord of the Rings: The Fellowship of the Ring",
+                Year: "2001",
+                Type: "movie",
+                Poster: "https://m.media-amazon.com/images/M/MV5BN2EyZjM3NzUtNWUzMi00MTgxLWI0NTctMzY4M2VlOTdjZWRiXkEyXkFqcGdeQXVyNDUzOTQ5MjY@._V1_SX300.jpg"
+            },
+            {
+                imdbID: "tt0110912",
+                Title: "Pulp Fiction",
+                Year: "1994",
+                Type: "movie",
+                Poster: "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_SX300.jpg"
+            },
+            {
+                imdbID: "tt0109830",
+                Title: "Forrest Gump",
+                Year: "1994",
+                Type: "movie",
+                Poster: "https://m.media-amazon.com/images/M/MV5BNWIwODRlZTUtY2U3ZS00Yzg1LWJhNzYtMmZiYmEyNmU1NjMzXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg"
+            },
+            {
+                imdbID: "tt0076759",
+                Title: "Star Wars",
+                Year: "1977",
+                Type: "movie",
+                Poster: "https://m.media-amazon.com/images/M/MV5BNzVlY2MwMjktM2E4OS00Y2Y3LWE3ZjctYzhkZGM3YzA1ZWM2XkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_SX300.jpg"
+            },
+            {
+                imdbID: "tt0317219",
+                Title: "Cars",
+                Year: "2006",
+                Type: "movie",
+                Poster: "https://m.media-amazon.com/images/M/MV5BMTg5NzY0MzA2MV5BMl5BanBnXkFtZTYwNDc3NTc2._V1_SX300.jpg"
+            },
+            {
+                imdbID: "tt0198781",
+                Title: "Monsters, Inc.",
+                Year: "2001",
+                Type: "movie",
+                Poster: "https://m.media-amazon.com/images/M/MV5BMTY1NTI0ODUyOF5BMl5BanBnXkFtZTgwNTEyNjQ0MDE@._V1_SX300.jpg"
+            }
+        ];
+
+        // State management
+        let currentPage = 1;
+        let currentSearch = '';
+        let currentType = '';
+        let totalResults = 0;
+        let hasSearched = false;
+        let favorites = new Set();
+
+        // DOM elements
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+        const typeSelect = document.getElementById('typeSelect');
+        const searchBtn = document.getElementById('searchBtn');
+        const loadingState = document.getElementById('loadingState');
+        const errorState = document.getElementById('errorState');
+        const noResults = document.getElementById('noResults');
+        const searchResults = document.getElementById('searchResults');
+        const featuredSection = document.getElementById('featuredSection');
+        const welcomeSection = document.getElementById('welcomeSection');
+        const moviesGrid = document.getElementById('moviesGrid');
+        const featuredGrid = document.getElementById('featuredGrid');
+        const resultsTitle = document.getElementById('resultsTitle');
+        const pagination = document.getElementById('pagination');
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            displayFeaturedMovies();
+            
+            // Search form submission
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                performSearch();
+            });
+        });
+
+        // Display featured movies
+        function displayFeaturedMovies() {
+            featuredGrid.innerHTML = '';
+            featuredMovies.forEach(movie => {
+                const movieCard = createMovieCard(movie);
+                featuredGrid.appendChild(movieCard);
+            });
+        }
+
+        // Create movie card element
+        function createMovieCard(movie) {
+            const card = document.createElement('div');
+            card.className = 'movie-card';
+            card.onclick = () => showMovieDetails(movie);
+
+            const posterUrl = movie.Poster !== "N/A" ? movie.Poster : 'https://via.placeholder.com/300x450/333/fff?text=No+Image';
+
+            card.innerHTML = `
+                <img src="${posterUrl}" alt="${movie.Title} poster" class="movie-poster" 
+                     onerror="this.src='https://via.placeholder.com/300x450/333/fff?text=No+Image'">
+                <div class="movie-info">
+                    <div class="movie-title">${movie.Title}</div>
+                    <div class="movie-year">${movie.Year}</div>
+                    <div class="movie-type">${movie.Type}</div>
+                    <div class="movie-actions">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <span>IMDb</span>
+                        </div>
+                        <button class="favorite-btn ${favorites.has(movie.imdbID) ? 'active' : ''}" 
+                                onclick="event.stopPropagation(); toggleFavorite('${movie.imdbID}', this)">
+                            <i class="${favorites.has(movie.imdbID) ? 'fas' : 'far'} fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Toggle favorite status
+        function toggleFavorite(imdbID, button) {
+            if (favorites.has(imdbID)) {
+                favorites.delete(imdbID);
+                button.classList.remove('active');
+                button.innerHTML = '<i class="far fa-heart"></i>';
+            } else {
+                favorites.add(imdbID);
+                button.classList.add('active');
+                button.innerHTML = '<i class="fas fa-heart"></i>';
+            }
+        }
+
+        // Show movie details (placeholder - would open detail modal/page)
+        function showMovieDetails(movie) {
+            alert(`Movie Details:\n\nTitle: ${movie.Title}\nYear: ${movie.Year}\nType: ${movie.Type}\nIMDb ID: ${movie.imdbID}\n\nClick OK to continue browsing.`);
+        }
+
+        // Perform search
+        async function performSearch(page = 1) {
+            const query = searchInput.value.trim();
+            const type = typeSelect.value;
+
+            if (!query) {
+                alert('Please enter a search term');
+                return;
+            }
+
+            currentSearch = query;
+            currentType = type;
+            currentPage = page;
+            hasSearched = true;
+
+            showLoading();
+            hideOtherSections();
+
+            try {
+                // Simulate API call with local data
+                const results = searchLocalMovies(query, type, page);
+                displaySearchResults(results);
+            } catch (error) {
+                showError('Failed to search movies. Please try again.');
+            }
+        }
+
+        // Search local movies (simulating API)
+        function searchLocalMovies(query, type, page) {
+            let results = featuredMovies.filter(movie => {
+                const matchesQuery = movie.Title.toLowerCase().includes(query.toLowerCase());
+                const matchesType = !type || movie.Type === type;
+                return matchesQuery && matchesType;
+            });
+
+            const itemsPerPage = 8;
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedResults = results.slice(startIndex, endIndex);
+
+            return {
+                Search: paginatedResults,
+                totalResults: results.length.toString(),
+                Response: paginatedResults.length > 0 ? "True" : "False"
+            };
+        }
+
+        // Display search results
+        function displaySearchResults(data) {
+            hideLoading();
+
+            if (data.Response === "False" || !data.Search || data.Search.length === 0) {
+                showNoResults();
+                return;
+            }
+
+            searchResults.style.display = 'block';
+            resultsTitle.textContent = `Found ${data.totalResults} results for "${currentSearch}"`;
+
+            moviesGrid.innerHTML = '';
+            data.Search.forEach(movie => {
+                const movieCard = createMovieCard(movie);
+                moviesGrid.appendChild(movieCard);
+            });
+
+            totalResults = parseInt(data.totalResults);
+            createPagination();
+        }
+
+        // Create pagination
+        function createPagination() {
+            const totalPages = Math.ceil(totalResults / 8);
+            pagination.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'page-btn';
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => performSearch(currentPage - 1);
+            pagination.appendChild(prevBtn);
+
+            // Page numbers
+            for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => performSearch(i);
+                pagination.appendChild(pageBtn);
+            }
+
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'page-btn';
+            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => performSearch(currentPage + 1);
+            pagination.appendChild(nextBtn);
+        }
+
+        // Show/hide different sections
+        function showLoading() {
+            loadingState.style.display = 'block';
+            searchBtn.disabled = true;
+            searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+        }
+
+        function hideLoading() {
+            loadingState.style.display = 'none';
+            searchBtn.disabled = false;
+            searchBtn.innerHTML = '<i class="fas fa-search"></i> Search';
+        }
+
+        function showError(message) {
+            hideLoading();
+            hideOtherSections();
+            errorState.style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        function showNoResults() {
+            hideOtherSections();
+            noResults.style.display = 'block';
+        }
+
+        function hideOtherSections() {
+            errorState.style.display = 'none';
+            noResults.style.display = 'none';
+            searchResults.style.display = 'none';
+            featuredSection.style.display = 'none';
+            welcomeSection.style.display = 'none';
+        }
+
+        function retrySearch() {
+            if (hasSearched) {
+                performSearch(currentPage);
+            } else {
+                showFeaturedAndWelcome();
+            }
+        }
+
+        function showFeaturedAndWelcome() {
+            errorState.style.display = 'none';
+            noResults.style.display = 'none';
+            searchResults.style.display = 'none';
+            featuredSection.style.display = 'block';
+            welcomeSection.style.display = 'block';
+        }
+
+        // Reset to home view
+        function resetToHome() {
+            hasSearched = false;
+            currentSearch = '';
+            currentType = '';
+            currentPage = 1;
+            searchInput.value = '';
+            typeSelect.value = '';
+            hideLoading();
+            showFeaturedAndWelcome();
+        }
+
+        // Add some sample searches for demonstration
+        window.sampleSearch = function(query) {
+            searchInput.value = query;
+            performSearch();
+        }
+    </script>
+</body>
+</html>
